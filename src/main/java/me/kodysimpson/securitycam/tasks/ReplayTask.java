@@ -31,7 +31,8 @@ public class ReplayTask extends BukkitRunnable {
 
         if (currentTick >= replay.getRecording().getTickDuration()){
             this.replay.getViewer().sendMessage("Replay has ended.");
-            replayService.stopReplay(replay);
+            pause();
+            return;
         }
 
         if (replay.getRecordableQueue().size() < 100){
@@ -74,6 +75,7 @@ public class ReplayTask extends BukkitRunnable {
     public void restart(){
         this.paused = true;
         currentTick = 0L;
+        replay.getRecordableQueue().clear();
     }
 
     public void play(){

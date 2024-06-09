@@ -61,15 +61,13 @@ public class ReplayService {
         //make sure we are not already loading more data
         if (!replay.tryLoadData()) return;
 
-        System.out.println("Trying to get more data for: " + startTick);
+        System.out.println("Loading data for replay: " + replay.getViewer().getName() + " at tick: " + startTick);
 
         try {
             long endTick = startTick + 100;
             if (endTick > replay.getRecording().getTickDuration()){
                 endTick = replay.getRecording().getTickDuration();
             }
-
-            System.out.println("End tick: " + endTick);
 
             Recording recording = replay.getRecording();
             List<Recordable> recordables = recordableDao.findByRecordingIdAndTickBetween(recording.getId(), startTick, endTick);
@@ -88,6 +86,20 @@ public class ReplayService {
                 groupedRecordables.add(tickRecordables);
             }
 
+            // Sort each grouped list by type (spawn first, then others, despawn last)
+            groupedRecordables.forEach(list -> list.sort((o1, o2) -> {
+                if (o1 instanceof SpawnEntityRecordable && !(o2 instanceof SpawnEntityRecordable)) {
+                    return -1;
+                } else if (!(o1 instanceof SpawnEntityRecordable) && o2 instanceof SpawnEntityRecordable) {
+                    return 1;
+                } else if (o1 instanceof DespawnEntityRecordable && !(o2 instanceof DespawnEntityRecordable)) {
+                    return 1;
+                } else if (!(o1 instanceof DespawnEntityRecordable) && o2 instanceof DespawnEntityRecordable) {
+                    return -1;
+                }
+                return 0; // No need to sort if both are of the same type
+            }));
+
             groupedRecordables.forEach(replay.getRecordableQueue()::add);
         }finally {
             replay.doneLoadingData();
@@ -103,10 +115,10 @@ public class ReplayService {
         });
         replay.getSpawnedEntities().clear();
         replay.restartReplay();
-        loadRecordables(replay, 0);
     }
 
     public void stopReplay(Replay replay){
+
         //stop the replay task
         replay.endReplay();
 
@@ -119,7 +131,7 @@ public class ReplayService {
 
         placeActualBlocks(replay.getRecording(), replay.getViewer());
 
-        replays.remove(replay);
+        replays.removeIf(replay1 -> replay1.getViewer().equals(replay.getViewer()));
     }
 
     public void stopAllReplays(){
