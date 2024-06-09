@@ -1,0 +1,15 @@
+name: security-cam
+version: '${project.version}'
+main: me.kodysimpson.securitycam.SecurityCam
+api-version: '1.20'
+depend:
+  - packetevents
+commands:
+  createcam:
+    description: Creates a new camera
+  startrecording:
+    description: Starts a new recording
+  stoprecording:
+    description: Stops a recording that you have
+  replay:
+    description: Replays a recording from a camera
