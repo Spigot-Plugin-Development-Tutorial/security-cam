@@ -76,13 +76,11 @@ public class ReplayCamerasMenu extends PaginatedMenu {
                 }
 
                 if (e.isLeftClick()){
-
                     playerMenuUtility.setData(PMUData.CAMERA, camera);
                     MenuManager.openMenu(RecordingsMenu.class, player);
-
-
                 }else if (e.isRightClick()){
-                    //TODO: tp them to the cam
+                    SecurityCam.getSecurityCam().getCameraService().teleportToCamera(camera, player);
+                    player.closeInventory();
                 }
             }
         }

@@ -90,4 +90,30 @@ public class CameraService {
         player.sendMessage("You have cancelled the camera creation process.");
     }
 
+    public void teleportToCamera(Camera camera, Player player){
+
+        //Using the two corners, teleport the player to the camera location
+        var corner1 = camera.getCorner1();
+        var corner2 = camera.getCorner2();
+
+        //choose a random location between the two corners,
+        //make sure its empty and teleport the player there.
+        //If the location is not empty, try again.
+        int tries = 20;
+        while (tries > 0){
+            int x = (int) (Math.random() * (corner1.getBlockX() - corner2.getBlockX()) + corner2.getBlockX());
+            int y = (int) (Math.random() * (corner1.getBlockY() - corner2.getBlockY()) + corner2.getBlockY());
+            int z = (int) (Math.random() * (corner1.getBlockZ() - corner2.getBlockZ()) + corner2.getBlockZ());
+
+            if (player.getWorld().getBlockAt(x, y, z).isEmpty()){
+                player.teleport(player.getWorld().getBlockAt(x, y, z).getLocation());
+                player.sendMessage("Teleported to the camera location!");
+                return;
+            }
+
+            tries--;
+        }
+        player.sendMessage("Could not teleport you to the camera location. The coordinates are near: " + corner1);
+    }
+
 }

@@ -81,7 +81,8 @@ public class RecordCamerasMenu extends PaginatedMenu {
                     SecurityCam.getSecurityCam().getRecordingService().startRecording(player, camera);
                     player.closeInventory();
                 }else if (event.isRightClick()){
-                    //TODO: tp them to the cam
+                    SecurityCam.getSecurityCam().getCameraService().teleportToCamera(camera, player);
+                    player.closeInventory();
                 }
 
             }
